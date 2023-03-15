@@ -1,4 +1,4 @@
-package middleware
+package database
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var db = database{}
+var Db = Database{}
 var Ctx = context.Background()
 
 func InitDatabase() error {
@@ -17,7 +17,7 @@ func InitDatabase() error {
 	if err != nil {
 		return err
 	}
-	err = db.connect(dbCfg.toString())
+	err = Db.connect(dbCfg.toString())
 	if err != nil {
 		return err
 	}
@@ -50,11 +50,11 @@ func (c *dbConfig) toString() string {
 	return "postgres://" + c.user + ":" + c.pass + "@" + c.host + ":" + strconv.FormatInt(c.port, 10) + "/" + c.dbname + "?sslmode=disable"
 }
 
-type database struct {
+type Database struct {
 	DbInstance *sql.DB
 }
 
-func (d *database) connect(connectionString string) error {
+func (d *Database) connect(connectionString string) error {
 	database, err := sql.Open("postgres", connectionString)
 	if err != nil {
 		return err
@@ -69,7 +69,7 @@ func (d *database) connect(connectionString string) error {
 	return nil
 }
 
-func (d *database) isConnected() bool {
+func (d *Database) isConnected() bool {
 	if err := d.DbInstance.Ping(); err != nil {
 		return false
 	}

@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "github.com/lib/pq"
+	"golang_server/database"
 	"golang_server/middleware"
 	"log"
 	_ "net/http"
@@ -25,7 +26,7 @@ func main() {
 	log.Printf("Listening on port %s", port)
 	log.Printf("Open http://localhost:%s in the browser", port)
 
-	err := middleware.InitDatabase()
+	err := database.InitDatabase()
 	if err != nil {
 		log.Panic(err)
 	}
