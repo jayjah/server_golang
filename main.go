@@ -15,6 +15,7 @@ Documentation references:
     -> https://www.practical-go-lessons.com/chap-9-control-statements
     -> https://go.dev/tour/basics/11
   - sqlboilder https://blog.logrocket.com/introduction-sqlboiler-go-framework-orms/
+  - gorm https://gorm.io
   - gin https://github.com/gin-gonic/gin OR https://gin-gonic.com/docs/
 */
 func main() {
@@ -26,6 +27,8 @@ func main() {
 	log.Printf("Listening on port %s", port)
 	log.Printf("Open http://localhost:%s in the browser", port)
 
+	go middleware.RunCronJobs()
+
 	err := database.InitDatabase()
 	if err != nil {
 		log.Panic(err)
@@ -36,4 +39,5 @@ func main() {
 	if err != nil {
 		log.Panic(err)
 	}
+
 }
