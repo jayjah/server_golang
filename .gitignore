@@ -1,6 +1,13 @@
 # Created by https://www.toptal.com/developers/gitignore/api/go,intellij,goland
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,intellij,goland
 
+### ENV ###
+.env
+
+### Postgres ###
+pg_data
+pg_data_test
+
 ### Go ###
 # If you prefer the allow list template instead of the deny list, see community template:
 # https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
