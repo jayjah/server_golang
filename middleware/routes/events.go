@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"golang_server/database"
-	"golang_server/models"
+	"golang_server/gorm_models/model"
 	"log"
 	"net/http"
 	"time"
@@ -12,10 +12,7 @@ import (
 func GetEvents(c *gin.Context) {
 	log.Printf("Current time: %s\n", c.MustGet("time").(time.Time))
 
-	events, err := models.Events().All(database.Ctx, database.Db.DbInstance)
-	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
+	var events []model.Event
+	database.Db.Instance.Model(&model.Event{}).Preload("Image").Find(&events)
 	c.JSON(http.StatusOK, events)
 }
