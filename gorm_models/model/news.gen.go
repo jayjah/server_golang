@@ -21,6 +21,7 @@ type News struct {
 	Createdat        time.Time `gorm:"column:createdat;not null;default:now()" json:"createdat"`
 	Updatedat        time.Time `gorm:"column:updatedat;not null;default:now()" json:"updatedat"`
 	ImageID          int64     `gorm:"column:image_id;not null" json:"image_id"`
+	Image			Image `gorm:"foreignKey:ImageID"`
 }
 
 // TableName News's table name
