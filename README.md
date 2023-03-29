@@ -18,10 +18,8 @@
     air
 ```
 
-##### Create/Recreate db models in `./models` || `./gorm_models`
+##### Create/Recreate db models in `./gorm_models`
 ```
-    sqlboiler psql -c sqlboiler.toml 
-    OR 
     gentool -db postgres -dsn "host=localhost user=backend-db password=backend-db dbname=backend-db port=5432 sslmode=disable" -outPath "./gorm_models"
 ```
 
