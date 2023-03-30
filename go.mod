@@ -6,8 +6,8 @@ require (
 	dagger.io/dagger v0.5.2
 	github.com/Depado/ginprom v1.7.6
 	github.com/gin-gonic/gin v1.9.0
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.6
-	github.com/pelletier/go-toml v1.9.5
 	gorm.io/driver/postgres v1.4.1
 	gorm.io/gen v0.3.21
 	gorm.io/gorm v1.24.6

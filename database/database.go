@@ -3,7 +3,8 @@ package database
 import (
 	"database/sql"
 	"encoding/json"
-	"github.com/pelletier/go-toml"
+	"fmt"
+	"github.com/joho/godotenv"
 	"golang_server/gorm_models/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -43,26 +44,25 @@ type dbConfig struct {
 }
 
 func (c *dbConfig) init() error {
-	if dbHost := os.Getenv("DB_HOST"); dbHost == "" {
-		// no environment configuration specified so using fallback
-		config, err := toml.LoadFile("sqlboiler.toml")
+	dbHost := os.Getenv("DB_HOST")
+
+	if dbHost == "" {
+		// no environment configuration specified; so loading environment file
+		err := godotenv.Load(".env")
 		if err != nil {
 			return err
 		}
-		dbTree := config.Get("psql").(*toml.Tree)
-		c.host = dbTree.Get("host").(string)
-		c.port = dbTree.Get("port").(int64)
-		c.user = dbTree.Get("user").(string)
-		c.pass = dbTree.Get("pass").(string)
-		c.dbname = dbTree.Get("dbname").(string)
-	} else {
-		// environment configuration so using them
-		c.host = dbHost
-		c.port, _ = strconv.ParseInt(os.Getenv("DB_PORT"), 10, 64)
-		c.user = os.Getenv("DB_USER")
-		c.pass = os.Getenv("DB_PASSWORD")
-		c.dbname = os.Getenv("DB_NAME")
+		dbHost = os.Getenv("DB_HOST")
+		if dbHost == "" {
+			return fmt.Errorf("could not load environment variables to construct database connection")
+		}
 	}
+
+	c.host = dbHost
+	c.port, _ = strconv.ParseInt(os.Getenv("DB_PORT"), 10, 64)
+	c.user = os.Getenv("DB_USER")
+	c.pass = os.Getenv("DB_PASSWORD")
+	c.dbname = os.Getenv("DB_NAME")
 
 	return nil
 }
@@ -89,9 +89,10 @@ func (d *Database) connect(connectionString string, makeMigrationsAndSeeding boo
 	if err != nil {
 		return err
 	}
-	confDb.SetMaxIdleConns(10)
-	confDb.SetMaxOpenConns(100)
-	confDb.SetConnMaxLifetime(time.Hour)
+	confDb.SetConnMaxIdleTime(time.Hour)
+	confDb.SetConnMaxLifetime(24 * time.Hour)
+	confDb.SetMaxIdleConns(100)
+	confDb.SetMaxOpenConns(200)
 	d.Instance = gormDb
 	if makeMigrationsAndSeeding {
 		gormDb.AutoMigrate(&model.Event{})
@@ -125,14 +126,22 @@ func (d *Database) connect(connectionString string, makeMigrationsAndSeeding boo
 		gormDb.AutoMigrate(&model.UserTraining{})
 		gormDb.AutoMigrate(&model.UserTrainingInternal{})
 
-		userSeeds, _ := os.ReadFile("seeds/users.json")
-		imageSeeds, _ := os.ReadFile("seeds/images.json")
-		var uData []model.User
-		var iData []model.Image
-		_ = json.Unmarshal(userSeeds, &uData)
-		_ = json.Unmarshal(imageSeeds, &iData)
-		gormDb.Create(uData)
-		gormDb.Create(iData)
+		userSeeds, err := os.ReadFile("seeds/users.json")
+		if err != nil {
+			var uData []model.User
+			err = json.Unmarshal(userSeeds, &uData)
+			if err != nil {
+				gormDb.Create(uData)
+			}
+		}
+		imageSeeds, err := os.ReadFile("seeds/images.json")
+		if err != nil {
+			var iData []model.Image
+			err = json.Unmarshal(imageSeeds, &iData)
+			if err != nil {
+				gormDb.Create(iData)
+			}
+		}
 	}
 	return nil
 }
