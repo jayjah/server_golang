@@ -1,6 +1,9 @@
 # Created by https://www.toptal.com/developers/gitignore/api/go,intellij,goland
 # Edit at https://www.toptal.com/developers/gitignore?templates=go,intellij,goland
 
+### Executables ###
+build/
+
 ### ENV ###
 .env
 
